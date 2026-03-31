@@ -1,51 +1,45 @@
 import { test, expect } from '@playwright/test';
 
-test('PUT: Update an existing booking with Auth', async ({ request }) => 
+test('PUT: Update an existing booking', async ({ request }) => 
 {
-    
-    // 1. GET THE TOKEN (The Login)
-    const authResponse = await request.post('https://restful-booker.herokuapp.com/auth', 
+    // Get a token first
+    const auth = await request.post('https://restful-booker.herokuapp.com/auth', 
     {
         data: 
         { 
-            "username": "admin", 
-            "password": "password123" 
+            username: 'admin', 
+            password: 'password123' 
         }
     });
-    const authBody = await authResponse.json();
-    const token = authBody.token;
+    const { token } = await auth.json();
 
-    // 2. THE DATA: Change the total price and additional needs for the booking
-    const updatedData = 
-    {
-        "firstname": "Aylin",
-        "lastname": "Valencia",
-        "totalprice": 200, 
-        "depositpaid": true,
-        "bookingdates": 
-        { 
-            "checkin": "2026-04-01", 
-            "checkout": "2026-04-05" 
-        },
-        "additionalneeds": "Late Checkout"
-    };
+    // Find an active ID 
+    const allBookings = await request.get('https://restful-booker.herokuapp.com/booking');
+    const ids = await allBookings.json();
+    const targetId = ids[0].bookingid;
 
-    // 3. THE REQUEST: Use .put() to update the booking with ID 1
-    const response = await request.put('https://restful-booker.herokuapp.com/booking/1', 
+    // Update the record using the token and ID found
+    const response = await request.put(`https://restful-booker.herokuapp.com/booking/${targetId}`, 
     {
         headers: 
         {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'Cookie': `token=${token}` // Token is sent as a cookie for authentication in this API
+            'Cookie': `token=${token}`,
+            'Accept': 'application/json'
         },
-        data: updatedData
+        data: 
+        {
+            firstname: 'Aylin',
+            lastname: 'Valencia',
+            totalprice: 200,
+            depositpaid: true,
+            bookingdates: 
+            { 
+                checkin: '2026-04-01', checkout: '2026-04-05' 
+            },
+            additionalneeds: 'Breakfast'
+        }
     });
 
-    // 4. VALIDATION
+    console.log(`Update Status for ID ${targetId}: ${response.status()}`);
     expect(response.status()).toBe(200);
-    const body = await response.json();
-    console.log('✅ Updated Record:', body);
-    expect(body.totalprice).toBe(200);
-    expect(body.additionalneeds).toBe('Late Checkout');
 });

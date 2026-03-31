@@ -6,8 +6,8 @@ test('POST: Generate Auth Token', async ({ request }) =>
     {
         data: 
         {
-            "username": "admin",
-            "password": "password123"
+            username: process.env.ADMIN_USER || 'admin',
+            password: process.env.ADMIN_PASSWORD || 'password123'
         }
     });
 
