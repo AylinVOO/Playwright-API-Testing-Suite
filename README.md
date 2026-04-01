@@ -1,3 +1,5 @@
+[![Playwright Tests](https://github.com/AylinVOO/Playwright-API-Testing-Suite/actions/workflows/playwright.yml/badge.svg?branch=main)](https://github.com/AylinVOO/Playwright-API-Testing-Suite/actions/workflows/playwright.yml)
+
 # Restful-Booker API Automation
 Repository for an API automation suite focused on CRUD lifecycle validation and Secure Token handling.
 
